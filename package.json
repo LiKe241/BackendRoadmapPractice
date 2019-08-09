@@ -1,0 +1,31 @@
+{
+  "name": "backendroadmap",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "eslint": "^6.1.0"
+  },
+  "devDependencies": {
+    "eslint-config-node": "^4.0.0",
+    "eslint-plugin-mocha": "^6.0.0",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-security": "^1.4.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiKe241/BackendRoadmapPractice.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LiKe241/BackendRoadmapPractice/issues"
+  },
+  "homepage": "https://github.com/LiKe241/BackendRoadmapPractice#readme",
+  "standard": {
+    "env": ["mocha"]
+  }
+}

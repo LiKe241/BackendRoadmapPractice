@@ -1,0 +1,49 @@
+{
+    "env": {
+        "commonjs": true,
+        "es6": true,
+        "node": true,
+        "mocha": true
+    },
+    "extends":  [
+        "eslint:recommended",
+        "plugin:node/recommended",
+        "plugin:mocha/recommended",
+        "plugin:security/recommended",
+        "node"
+    ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018
+    },
+    "rules": {
+        "indent": [
+            "error",
+            2
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "import/no-nodejs-modules": 0,
+        "import/no-commonjs": 0,
+        "prefer-arrow-callback": 0,
+        "mocha/prefer-arrow-callback": 2,
+        "no-invalid-this": 0
+    },
+    "plugins": [
+      "mocha",
+      "security"
+    ]
+}
