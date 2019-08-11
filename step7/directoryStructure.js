@@ -30,7 +30,7 @@ exports.createStruct = async function createStruct(struct, targetRoot = __dirnam
   } catch (e) { throw e; }
 };
 
-// // test getStruct
+// test getStruct
 // console.log(JSON.stringify(exports.getStruct()));
 
 // // test createstruct
