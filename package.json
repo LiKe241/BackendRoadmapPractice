@@ -26,6 +26,8 @@
   },
   "homepage": "https://github.com/LiKe241/BackendRoadmapPractice#readme",
   "standard": {
-    "env": ["mocha"]
+    "env": [
+      "mocha"
+    ]
   }
 }
