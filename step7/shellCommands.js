@@ -1,5 +1,5 @@
-var fs = require('fs');
-var currentDir = __dirname;
+const fs = require('fs');
+let currentDir = __dirname;
 
 exports.cd = (newDir = __dirname) => {
   // no parameters received, changes to current module directory

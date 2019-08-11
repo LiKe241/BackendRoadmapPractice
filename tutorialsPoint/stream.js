@@ -1,6 +1,6 @@
-var fs = require('fs');
-var zlib = require('zlib');
-var data = '';
+// const fs = require('fs');
+// const zlib = require('zlib');
+// const data = '';
 
 // reads from text.txt
 // var readerStream = fs.createReadStream('text.txt');
@@ -45,5 +45,4 @@ var data = '';
 //   .pipe(fs.createWriteStream('dec.text.txt'));
 // console.log('File Decompressed');
 
-
-console.log('Last line of program');
+// console.log('Last line of program');
