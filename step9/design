@@ -1,0 +1,12 @@
+models/
+  database file
+    table of users' account information
+    table of all threads (thread ID, creator's ID, posted time, last edited time, title, contents)
+    table of all responds (respond ID, parent ID, creator's ID, posted time, last edited time, contents)
+    need to dump to .sql file everytime before push to master and user mysql-import to import after every pull?
+    dump command: mysqldump -u root -p$MYSQL_PASSWORD databaseName > database.sql
+    import command (given databaseName already exists): mysql -u root -p$MYSQL_PASSWORD databaseName < database.sql
+controllers/
+  routs and logic, receives CRUD actions from HTTP request, and performs cooresponding actions on models
+views/
+  jade templates of each page
