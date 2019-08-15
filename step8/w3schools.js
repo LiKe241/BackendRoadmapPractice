@@ -4,8 +4,7 @@ const util = require('util');
 const con = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: process.env.MYSQL_PASSWORD,
-  database: 'w3s'
+  password: process.env.MYSQL_PASSWORD
 });
 
 const connect = util.promisify(con.connect).bind(con);
@@ -20,12 +19,12 @@ const query = util.promisify(con.query).bind(con);
     // // creates a database named w3s
     // await query('CREATE DATABASE w3s');
     // console.log('Database created');
-
+    
     // // creates a table named customers with three fields
     // const create = 'CREATE TABLE customers (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), address VARCHAR(255))';
     // await query(create);
     // console.log('Table created');
-
+    
     // // inserts values into customers
     // const insert = 'INSERT INTO customers (name, address) VALUES ?';
     // const values = [
@@ -46,14 +45,14 @@ const query = util.promisify(con.query).bind(con);
     // ];
     // const insertResult = await query(insert, [values]);
     // console.log('Number of rows inserted: ' + insertResult.affectedRows);
-
-    // retrives all rows in customers
-    const select = 'SELECT name, address FROM customers';
-    const allRows = await query(select);
-    console.log('All results:');
-    console.log(allRows);
-    // return value of SELECT is an array of RowDataPacket(objects)
-    console.log('Address of first row: ' + allRows[0].address);
+    
+    // // retrives all rows in customers
+    // const select = 'SELECT name, address FROM customers';
+    // const allRows = await query(select);
+    // console.log('All results:');
+    // console.log(allRows);
+    // // return value of SELECT is an array of RowDataPacket(objects)
+    // console.log('Address of first row: ' + allRows[0].address);
 
     // // retrives a specific customer
     // const select = 'SELECT name, address FROM customers WHERE address = \'Park Lane 38\'';
