@@ -6,12 +6,15 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "nyc": "^14.1.1"
+  },
   "devDependencies": {
     "mocha": "^6.2.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "nyc --cache false mocha ",
+    "posttest": "rm -rf .nyc_output"
   },
   "author": "",
   "license": "ISC"

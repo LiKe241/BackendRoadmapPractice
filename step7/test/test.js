@@ -7,11 +7,13 @@ const folderA = path.join(__dirname, '/folderA');
 const folderB = path.join(__dirname, '/folderA/folderB');
 const file1 = path.join(__dirname, '/folderA/file1');
 const file2 = path.join(__dirname, '/folderA/folderB/file2');
+const unreadable = '/qtpphqwzf215';
 
 /* eslint
 no-console: ["error", { allow: ["warn", "error"] }],
 security/detect-object-injection: "off",
-security/detect-non-literal-fs-filename: "off"
+security/detect-non-literal-fs-filename: "off",
+no-debugger: "off"
 */
 describe('Unit Tests', function() {
   describe('directoryStructure.js Tests', function() {
@@ -86,6 +88,14 @@ describe('Unit Tests', function() {
         const struct = dirStruc.getStruct(folderA);
         recursiveAssert(struct, expectedFolders);
       } catch (e) { throw e; }
+    });
+
+    it('Tries to read non-readable folder, should throw', function () {
+      assert.throws(() => { dirStruc.getStruct(unreadable); });
+    });
+
+    it('Tries to create in a non-readable folder, should throw', function () {
+      assert.throws(() => { dirStruc.createStruct(expectedStruct, unreadable); });
     });
 
     after('Removes sample directory', async function() {

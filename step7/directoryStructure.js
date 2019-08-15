@@ -20,12 +20,12 @@ exports.getStruct = function getStruct(dir = path.resolve(__dirname, '..')) {
   } catch (e) { throw e; }
 };
 
-exports.createStruct = async function createStruct(struct, targetRoot = __dirname) {
+exports.createStruct = function createStruct(struct, targetRoot = __dirname) {
   try {
     if (struct.type === 'file') return;
     const folderName = path.basename(struct.path);
     const newDir = targetRoot + '/' + folderName;
-    await fs.mkdirSync(newDir);
+    fs.mkdirSync(newDir);
     struct.children.forEach(async (child) => await createStruct(child, newDir));
   } catch (e) { throw e; }
 };
