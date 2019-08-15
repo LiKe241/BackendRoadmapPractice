@@ -1,6 +1,7 @@
 models/
   database file
-    table of users' account information
+    table of users' account information (id INT, name VARCHAR(15), passwordHash CHAR(60))
+    uses bcrypt to store users' passwordHash
     table of all threads (thread ID, creator's ID, posted time, last edited time, title, contents)
     table of all responds (respond ID, parent ID, creator's ID, posted time, last edited time, contents)
     need to dump to .sql file everytime before push to master and user mysql-import to import after every pull?
@@ -8,5 +9,14 @@ models/
     import command (given databaseName already exists): mysql -u root -p$MYSQL_PASSWORD databaseName < database.sql
 controllers/
   routs and logic, receives CRUD actions from HTTP request, and performs cooresponding actions on models
+
+  register
+    insert user name and passwordHash
+  login
+    select user name and compare hash
+  public
+    select all threads
+  profile
+    select all threads and responds where creatorId = userId
 views/
   jade templates of each page
