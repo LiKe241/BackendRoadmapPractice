@@ -1,19 +1,19 @@
-var http = require('http');
-var fs = require('fs');
-var url = require('url');
-var nodemailer = require('nodemailer');
+const http = require('http');
+const fs = require('fs');
+const url = require('url');
+const nodemailer = require('nodemailer');
 // imports user-defined module
-var dt = require('./module');
+const dt = require('./module');
 
 // configure email functionality
-var transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'aiden.li.610@gmail.com',
     pass: process.env.GMAIL_PASSWORD
   }
 });
-var emailContents = {
+const emailContents = {
   from: 'aiden.li.610@gmail.com',
   to: 'rxzrxz233@gmail.com',
   subject: 'Testing nodemailer',
