@@ -6,7 +6,7 @@ http.createServer((req, res) => {
   // gets the pathname in the url of the request
   var pathname = url.parse(req.url).pathname;
 
-  console.log('Request for ' + pathname + ' received.');
+  console.log('Request for ' + pathname.substr(1) + ' received.');
 
   // reads requested file from file system
   fs.readFile(pathname.substr(1), (err, data) => {
