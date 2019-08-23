@@ -8,6 +8,7 @@ const query = config.query;
 
 exports.connect = config.connect;
 exports.end = con.end;
+exports.query = config.query;
 exports.createUser = async (name, password) => {
   const rows = await query('SELECT * FROM users WHERE name = ?', [name]);
   if (rows.length >= 1) {
