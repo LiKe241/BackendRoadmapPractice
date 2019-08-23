@@ -1,6 +1,5 @@
 const assert = require('assert');
 const http = require('http');
-const util = require('util');
 const pug = require('pug');
 const path = require('path');
 
