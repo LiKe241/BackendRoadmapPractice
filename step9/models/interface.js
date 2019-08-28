@@ -27,3 +27,19 @@ exports.validateUser = async (name, password) => {
   const hash = rows[0].passwordHash;
   return await util.promisify(bcrypt.compare).bind(bcrypt)(password, hash);
 };
+
+exports.getUserID = async (name) => {
+  const rows = await query('SELECT * FROM users WHERE name = ?', [name]);
+  if (rows.length === 0) {
+    throw new RangeError('user does not exist');
+  }
+  return rows[0].id;
+};
+
+exports.getUserName = async (id) => {
+  const rows = await query('SELECT * FROM users WHERE id = ?', [id]);
+  if (rows.length === 0) {
+    throw new RangeError('id does not exist');
+  }
+  return rows[0].name;
+};

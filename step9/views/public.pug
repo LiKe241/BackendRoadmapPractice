@@ -1,5 +1,12 @@
 body
-  .login
-    a(href="/login") login
-  .register
-    a(href="/register") register
+  if username
+    p Hello #{username}
+    .newThread
+      a(href="/newThread") start a new thread
+    a(href="/logout") logout
+  else
+    p You need to log in or register
+    .login
+      a(href="/login") login
+    .register
+      a(href="/register") register

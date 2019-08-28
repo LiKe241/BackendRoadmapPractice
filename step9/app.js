@@ -1,5 +1,5 @@
 const http = require('http');
-const routes = require('./controllers/routes');
+const router = require('./controllers/router');
 const db = require('./models/interface');
 
 /* eslint no-console: "off" */
@@ -10,7 +10,7 @@ const db = require('./models/interface');
   http.createServer((req, res) => {
     try {
       console.log('Received request ' + req.url);
-      routes.routes(req, res);
+      router.routes(req, res);
     } catch (e) { console.error(e.stack); }
   }).listen(8080);
 
