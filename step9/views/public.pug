@@ -10,3 +10,16 @@ body
       a(href="/login") login
     .register
       a(href="/register") register
+  table
+    tr
+      th Title
+      th Created By
+      th Last Edited Time
+      th Created Time
+    each thread in threads
+      tr
+        td
+          a(href="/thread?id=" + thread.threadID) #{thread.title}
+        td #{thread.creatorName}
+        td #{thread.timeEdited}
+        td #{thread.timeCreated}

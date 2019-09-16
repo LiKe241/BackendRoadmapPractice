@@ -1,0 +1,15 @@
+mixin recursiveParse(responses)
+  ul
+    each response in responses
+      li #{response.content}
+      li Created By #{response.creatorName} at #{response.timeCreated}, Last Edited at #{response.timeEdited}
+      if response.responses
+         +recursiveParse(response.responses)
+
+
+body
+  h1 #{threadInfo.title}
+  p #{threadInfo.content}
+  p Created By #{threadInfo.creatorName} at #{threadInfo.timeCreated}, Last Edited at #{threadInfo.timeEdited}
+  if threadInfo.responses
+    +recursiveParse(threadInfo.responses)

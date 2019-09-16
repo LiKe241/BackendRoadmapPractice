@@ -20,6 +20,8 @@ exports.routes = (req, res) => {
       routes.newThread(req, res);
     } else if (req.url === '/logout') {
       routes.logout(res);
+    } else if (req.url.includes('/thread')) {
+      routes.thread(req, res);
     // current request url does not match anything
     } else {
       routes.notFound(req, res);

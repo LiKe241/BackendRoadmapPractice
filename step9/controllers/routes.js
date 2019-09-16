@@ -75,16 +75,30 @@ exports.profile = (req, res) => {
   return req;
 };
 
-
-// TODO
 exports.newThread = (req, res) => {
   if (ru.isLoggedIn(req, res)) {
-    // reached via a link, asks user to submit registering info
+    // reached via a link, asks user to submit thread contents
     if (req.method === 'GET') {
       ru.sendTemplate(res, ru.templates.newThread);
-    // reached via submitting registering info
+    // reached via submitting thread contents
     } else if (req.method === 'POST') {
-      return null;
+      let form = '';
+      req.on('data', (d) => form += d);
+      req.on('end', async () => {
+        form = qs.parse(form);
+        try {
+          await db.createThread(
+            form.title,
+            form.content,
+            cookie.parse(req.headers.cookie).userID
+          );
+          res.writeHead(301, { Location: '/public' });
+          res.end();
+        } catch (err) {
+          err.code = 500;
+          ru.sendTemplate(res, ru.templates.error, { err });
+        }
+      });
     }
   } else {
     ru.warnNotLogIn(res);
@@ -92,24 +106,21 @@ exports.newThread = (req, res) => {
 };
 
 exports.publicPage = async (req, res) => {
-  // user had logged in
-  if (ru.isLoggedIn(req, res)) {
-    try {
-      // throws RangeError if could not find userID in database
-      const username = await db.getUserName(
+  try {
+    // username = '' if not logged in, username otherwise
+    const username = ru.isLoggedIn(req, res)
+      ? await db.getUserName(
         cookie.parse(req.headers.cookie).userID
-      );
-      ru.sendTemplate(res, ru.templates.public, { username });
-    } catch (err) {
-      err.code = 500;
-      err.message = 'Cache is contaminated';
-      ru.sendTemplate(res, ru.templates.error, { err });
-    }
-  } else {
-    ru.sendTemplate(res, ru.templates.public);
+      )
+      : '';
+    // gets latest 1-10 threads
+    const threads = await db.getLatest(1, 10);
+    ru.sendTemplate(res, ru.templates.public, { username, threads });
+  } catch (err) {
+    err.code = 500;
+    ru.sendTemplate(res, ru.templates.error, { err });
   }
 };
-
 
 exports.logout = (res) => {
   res.setHeader('Set-Cookie', cookie.serialize(
@@ -117,4 +128,15 @@ exports.logout = (res) => {
   );
   res.writeHead(301, { Location: '/public' });
   res.end();
+};
+
+exports.thread = async (req, res) => {
+  try {
+    const id = new URL('http:/' + req.url).searchParams.get('id');
+    const threadInfo = await db.findChildren(id);
+    ru.sendTemplate(res, ru.templates.thread, { threadInfo });
+  } catch (err) {
+    err.code = 500;
+    ru.sendTemplate(res, ru.templates.error, { err });
+  }
 };

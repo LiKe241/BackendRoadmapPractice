@@ -9,7 +9,8 @@ exports.templates = {
   login: views + '/login.pug',
   register: views + '/register.pug',
   error: views + '/error.pug',
-  newThread: views + '/newThread.pug'
+  newThread: views + '/newThread.pug',
+  thread: views + '/thread.pug'
 };
 
 // renders pug template file and writes into response
