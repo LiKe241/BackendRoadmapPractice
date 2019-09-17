@@ -1,0 +1,20 @@
+body
+  a(href="public") main page
+  each post in posts
+    if post.content
+      p.
+        #[a(href="/thread?id=" + post.threadID) #{post.title}]
+        #{post.content}
+        created: #{post.timeCreated}
+        edited: #{post.timeEdited}
+    else
+      p.
+        #[a(href="/thread?id=" + post.threadID) #{post.title}]
+        #{post.creatorName}
+        created: #{post.timeCreated}
+        edited: #{post.timeEdited}
+      ul
+        li.
+          #{post.response.content}
+          created: #{post.response.timeCreated}
+          edited: #{post.response.timeEdited}

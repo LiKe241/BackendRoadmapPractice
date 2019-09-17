@@ -10,7 +10,8 @@ exports.templates = {
   register: views + '/register.pug',
   error: views + '/error.pug',
   newThread: views + '/newThread.pug',
-  thread: views + '/thread.pug'
+  thread: views + '/thread.pug',
+  myPosts: views + '/myPosts.pug'
 };
 
 // renders pug template file and writes into response
@@ -24,11 +25,3 @@ exports.sendTemplate = (res, template, options = {}) => {
 // returns true if cookie.userID is not empty string
 exports.isLoggedIn = (req) => req.headers.cookie
   && cookie.parse(req.headers.cookie).userID !== '';
-
-exports.warnNotLogIn = (res) =>
-  exports.sendTemplate(res, exports.templates.error, {
-    err: {
-      code: 403,
-      message: 'Not logged in'
-    }
-  });

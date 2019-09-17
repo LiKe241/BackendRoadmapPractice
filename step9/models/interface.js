@@ -111,7 +111,7 @@ const sqlFindChildThreads =
 FROM threads AS t JOIN users AS u ON t.FK_creatorID = u.ID \
 WHERE parentID = ?';
 exports.findChildren = async (rootID) => {
-  let parent = await query(
+  const parent = await query(
     'SELECT \
       t.ID AS id, \
       title, \
@@ -124,14 +124,12 @@ exports.findChildren = async (rootID) => {
     WHERE t.ID = ?',
     [rootID]
   );
-  parent = parent[0];
-  parent.responses = [];
-  const children = await query(sqlFindChildThreads, [rootID]);
-  // checks children is not empty
-  if (children.length === 0) { return parent; }
-  await recursiveFindChildren(children);
-  parent.responses = children;
-  return parent;
+  // could not find thread with given id, returns empty array
+  if (parent.length === 0) {
+    return parent;
+  }
+  await recursiveFindChildren(parent);
+  return parent[0];
 };
 
 async function recursiveFindChildren(parents) {
@@ -158,3 +156,104 @@ exports.modifyThread = async (content, toUpdateID) => {
     [content, toUpdateID]
   );
 };
+
+exports.delete = async (threadID, userID) => {
+  const parent = await query(
+    'SELECT ID AS id FROM threads WHERE ID = ? AND FK_creatorID = ?',
+    [threadID, userID]
+  );
+  if (parent.length === 0) {
+    throw new RangeError;
+  }
+  const indices = [];
+  await recursiveFindChildren(parent);
+  // uses DFS to recursively get all indices of deleting threads
+  parent.forEach(function recurFindIdx(thread) {
+    indices.push(thread.id);
+    if (thread.responses) {
+      thread.responses.forEach(recurFindIdx);
+    }
+  });
+  await query('DELETE FROM threads WHERE ID IN (?)', [indices]);
+};
+
+/*
+returns [
+  // post created by userID
+  {
+    threadID: foo,
+    title: foo,
+    content: foo,
+    timeCreated: foo,
+    timeEdited: foo
+  },
+  // responses to other threads
+  {
+    threadID:foo,
+    title:foo,
+    creatorName:foo,
+    timeCreated: foo,
+    timeEdited: foo,
+    response: {content:foo, timeCreated:foo, timeEdited:foo}
+  }, ...
+]
+*/
+exports.findPostsBy = async (userID) => {
+  const posts = await query(
+    'SELECT \
+      ID AS threadID, \
+      title, \
+      content, \
+      DATE_FORMAT(timeCreated, "%e-%c-%y %T") AS timeCreated, \
+      DATE_FORMAT(timeEdited, "%e-%c-%y %T") AS timeEdited \
+    FROM threads WHERE FK_creatorID = ? \
+    ORDER BY timeEdited DESC',
+    [userID]
+  );
+  const postsInfo = [];
+  for (const post of posts) {
+    if (post.title === null) {
+      // post is a response, appends its root thread
+      const parent = await findRoot(post.threadID);
+      parent.response = post;
+      delete post.title;
+      delete post.threadID;
+      postsInfo.push(parent);
+    } else {
+      // post is a root thread, appends itself
+      postsInfo.push(post);
+    }
+  }
+  return postsInfo;
+};
+
+/*
+returns the root thread of given id as
+{
+  threadID: foo,
+  title: foo,
+  creatorName: foo,
+  timeCreated: foo,
+  timeEdited: foo
+}
+*/
+async function findRoot(id) {
+  let parent;
+  do {
+    parent = (await query(
+      'SELECT \
+        t.ID AS threadID, \
+        title, \
+        u.username AS creatorName, \
+        DATE_FORMAT(timeCreated, "%e-%c-%y %T") AS timeCreated, \
+        DATE_FORMAT(timeEdited, "%e-%c-%y %T") AS timeEdited, \
+        parentID \
+      FROM threads AS t JOIN users AS u ON t.FK_creatorID = u.ID \
+      WHERE t.ID = ?',
+      [id]
+    ))[0];
+    id = parent.parentID;
+  } while (parent.parentID !== 0);
+  delete parent.parentID;
+  return parent;
+}

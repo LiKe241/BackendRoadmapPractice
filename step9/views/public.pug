@@ -3,7 +3,10 @@ body
     p Hello #{username}
     .newThread
       a(href="/newThread") start a new thread
-    a(href="/logout") logout
+    .myPosts
+      a(href="/myPosts") my posts
+    .logout
+      a(href="/logout") logout
   else
     p You need to log in or register
     .login

@@ -25,6 +25,10 @@ exports.routes = (req, res) => {
       routes.postResponse(req, res);
     } else if (req.url === '/modification') {
       routes.modify(req, res);
+    } else if (req.url.includes('/delete?id=')) {
+      routes.delete(req, res);
+    } else if (req.url === '/myPosts') {
+      routes.myPosts(req, res);
     } else {
       // current request url does not match anything, returns 404 not found
       routes.notFound(req, res);

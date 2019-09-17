@@ -71,15 +71,12 @@ exports.register = (req, res) => {
   }
 };
 
-exports.profile = (req, res) => {
-  // TODO: displays all posts and responds by current user
-  res();
-  return req;
-};
-
 exports.newThread = (req, res) => {
   if (!ru.isLoggedIn(req, res)) {
-    ru.warnNotLogIn(res);
+    ru.sendTemplate(res, ru.templates.error, {
+      err: { code: 403, message: 'not logged in'}
+    });
+    return;
   }
   // reached via a link, asks user to submit thread contents
   if (req.method === 'GET') {
@@ -135,8 +132,14 @@ exports.thread = async (req, res) => {
   try {
     const id = new URL('http:/' + req.url).searchParams.get('id');
     const threadInfo = await db.findChildren(id);
+    // could not find thread with given id, redirects to /public
+    if (threadInfo.length === 0) {
+      res.writeHead(301, { Location: '/public' });
+      res.end();
+      return;
+    }
     const userID =
-      ru.isLoggedIn(req, res)
+      ru.isLoggedIn(req)
       && cookie.parse(req.headers.cookie).userID;
     ru.sendTemplate(res, ru.templates.thread, {
       threadInfo,
@@ -150,7 +153,10 @@ exports.thread = async (req, res) => {
 
 exports.serveJS = (req, res) => {
   try {
-    const file = fs.readFileSync(path.resolve(__dirname, '..', req.url.substr(1)));
+    // reads file from disk
+    const file = fs.readFileSync(
+      path.resolve(__dirname, '..', req.url.substr(1))
+    );
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html');
     res.end(file);
@@ -194,4 +200,42 @@ exports.modify = async (req, res) => {
       ru.sendTemplate(res, ru.templates.error, { err });
     }
   });
+};
+
+exports.delete = async (req, res) => {
+  try {
+    const toDeleteThreadID =
+      new URL('http:/' + req.url).searchParams.get('id');
+    // userID = userID inside cookie, false if it is not in cookie
+    const userID =
+      ru.isLoggedIn(req)
+      && cookie.parse(req.headers.cookie).userID;
+    await db.delete(toDeleteThreadID, userID);
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/html');
+    res.end();
+  } catch (err) {
+    // could not thread to delete does not match current user id,
+    // deletion forbbiden
+    res.statusCode = 403;
+    res.setHeader('Content-Type', 'text/html');
+    res.end();
+  }
+};
+
+exports.myPosts = async (req, res) => {
+  try {
+    if (!ru.isLoggedIn(req, res)) {
+      ru.sendTemplate(res, ru.templates.error, {
+        err: { code: 403, message: 'not logged in'}
+      });
+      return;
+    }
+    const userID = cookie.parse(req.headers.cookie).userID;
+    const posts = await db.findPostsBy(userID);
+    ru.sendTemplate(res, ru.templates.myPosts, { posts });
+  } catch (err) {
+    err.code = 500;
+    ru.sendTemplate(res, ru.templates.error, { err });
+  }
 };
