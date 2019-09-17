@@ -1,14 +1,14 @@
 // replaces button to response element
 function replaceToInput(toReplace, type) {
   const newDiv = document.createElement('DIV');
-  newDiv.setAttribute('id', 'd' + toReplace.id);
+  newDiv.setAttribute('id', 'd' + toReplace.name);
   const form = document.createElement('FORM');
   form.setAttribute('method', 'post');
   form.setAttribute('action', '/' + type);
   const content = document.createElement('TEXTAREA');
   content.setAttribute('name', 'content');
   if (type === 'modification') {
-    const originalContent = document.getElementById('p' + toReplace.id);
+    const originalContent = document.getElementById('p' + toReplace.name);
     content.innerText = originalContent.innerText;
   }
   form.appendChild(content);
@@ -18,7 +18,7 @@ function replaceToInput(toReplace, type) {
   form.appendChild(submit);
   const toUpdateID = document.createElement('INPUT');
   toUpdateID.setAttribute('name', 'toUpdateID');
-  toUpdateID.setAttribute('value', toReplace.id);
+  toUpdateID.setAttribute('value', toReplace.name);
   toUpdateID.style.visibility = 'hidden';
   form.appendChild(toUpdateID);
   const threadID = document.createElement('INPUT');
@@ -31,7 +31,7 @@ function replaceToInput(toReplace, type) {
   cancel.setAttribute('type', 'button');
   cancel.setAttribute(
     'onclick',
-    'restoreToButton(' + toReplace.id + ', "' + type + '")'
+    'restoreToButton(' + toReplace.name + ', "' + type + '")'
   );
   cancel.innerText = 'cancel ' + type;
   newDiv.appendChild(cancel);
@@ -42,7 +42,7 @@ function replaceToInput(toReplace, type) {
 function restoreToButton(id, type) {
   const toReplace = document.getElementById('d' + id);
   const newButton = document.createElement('BUTTON');
-  newButton.setAttribute('id', id);
+  newButton.setAttribute('name', id);
   newButton.setAttribute('onclick', 'replaceToInput(this, "' + type + '")');
   if (type === 'response') {
     newButton.innerText = 'post response';
@@ -50,4 +50,24 @@ function restoreToButton(id, type) {
     newButton.innerText = 'modify';
   }
   toReplace.parentNode.replaceChild(newButton, toReplace);
+}
+
+// sends request to delete post
+function deleteThread(toDelete) {
+  const toDeleteID = toDelete.name;
+  const xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+    if (this.readyState == 4) {
+      if (this.status == 200) {
+        window.location.reload(false);
+      } else if (this.status == 403) {
+        deletingText.innerText = 'deletion failed';
+      }
+    }
+  };
+  xhttp.open('GET', '/delete?id=' + toDelete.name, true);
+  xhttp.send();
+  const deletingText = document.createElement('P');
+  deletingText.innerText = 'deleting...';
+  toDelete.parentNode.replaceChild(deletingText, toDelete);
 }

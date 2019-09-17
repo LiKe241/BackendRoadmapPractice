@@ -2,13 +2,14 @@ mixin recursiveParse(responses)
   ul
     each response in responses
       li(id='p' + response.id) #{response.content}
-      li response #{response.id} created by #{response.creatorName} at #{response.timeCreated}, edited at #{response.timeEdited}
+      li created by #{response.creatorName} at #{response.timeCreated}, edited at #{response.timeEdited}
       if userID
-        button(id=response.id onclick='replaceToInput(this, "response")') post response
+        button(name=response.id onclick='replaceToInput(this, "response")') post response
       else
         li log in to post response
       if userID == response.creatorID
-        button(id=response.id onclick='replaceToInput(this, "modification")') modify
+        button(name=response.id onclick='replaceToInput(this, "modification")') modify
+        button(name=response.id onclick='deleteThread(this)') delete
       if response.responses
          +recursiveParse(response.responses)
 
@@ -18,12 +19,13 @@ body
   a(href="public") main page
   h1 #{threadInfo.title}
   p(id='p' + threadInfo.id) #{threadInfo.content}
-  p thread #{threadInfo.id} created by #{threadInfo.creatorName} at #{threadInfo.timeCreated}, edited at #{threadInfo.timeEdited}
+  p created by #{threadInfo.creatorName} at #{threadInfo.timeCreated}, edited at #{threadInfo.timeEdited}
   if userID
-    button(id=threadInfo.id onclick='replaceToInput(this, "response")') post response
+    button(name=threadInfo.id onclick='replaceToInput(this, "response")') post response
   else
     p log in to post response
   if userID == threadInfo.creatorID
-    button(id=threadInfo.id onclick='replaceToInput(this, "modification")') modify
+    button(name=threadInfo.id onclick='replaceToInput(this, "modification")') modify
+    button(name=threadInfo.id onclick='deleteThread(this)') delete
   if threadInfo.responses
     +recursiveParse(threadInfo.responses)
