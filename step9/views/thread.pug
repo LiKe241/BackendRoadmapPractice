@@ -1,15 +1,29 @@
 mixin recursiveParse(responses)
   ul
     each response in responses
-      li #{response.content}
-      li Created By #{response.creatorName} at #{response.timeCreated}, Last Edited at #{response.timeEdited}
+      li(id='p' + response.id) #{response.content}
+      li response #{response.id} created by #{response.creatorName} at #{response.timeCreated}, edited at #{response.timeEdited}
+      if userID
+        button(id=response.id onclick='replaceToInput(this, "response")') post response
+      else
+        li log in to post response
+      if userID == response.creatorID
+        button(id=response.id onclick='replaceToInput(this, "modification")') modify
       if response.responses
          +recursiveParse(response.responses)
 
-
+head
+  script(src='/views/thread.js')
 body
+  a(href="public") main page
   h1 #{threadInfo.title}
-  p #{threadInfo.content}
-  p Created By #{threadInfo.creatorName} at #{threadInfo.timeCreated}, Last Edited at #{threadInfo.timeEdited}
+  p(id='p' + threadInfo.id) #{threadInfo.content}
+  p thread #{threadInfo.id} created by #{threadInfo.creatorName} at #{threadInfo.timeCreated}, edited at #{threadInfo.timeEdited}
+  if userID
+    button(id=threadInfo.id onclick='replaceToInput(this, "response")') post response
+  else
+    p log in to post response
+  if userID == threadInfo.creatorID
+    button(id=threadInfo.id onclick='replaceToInput(this, "modification")') modify
   if threadInfo.responses
     +recursiveParse(threadInfo.responses)

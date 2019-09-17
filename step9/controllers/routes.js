@@ -2,6 +2,8 @@ const cookie = require('cookie');
 const qs = require('querystring');
 const db = require('../models/interface');
 const ru = require('./routerUtils');
+const fs = require('fs');
+const path = require('path');
 
 exports.notFound = (req, res) => {
   const err = new RangeError(req.url + ' does not exist');
@@ -61,9 +63,9 @@ exports.register = (req, res) => {
         );
         res.writeHead(301, { Location: '/public' });
         res.end();
-      } catch (e) {
-        e.code = 400;
-        ru.sendTemplate(res, ru.templates.error, { err: e });
+      } catch (err) {
+        err.code = 400;
+        ru.sendTemplate(res, ru.templates.error, { err });
       }
     });
   }
@@ -76,32 +78,31 @@ exports.profile = (req, res) => {
 };
 
 exports.newThread = (req, res) => {
-  if (ru.isLoggedIn(req, res)) {
-    // reached via a link, asks user to submit thread contents
-    if (req.method === 'GET') {
-      ru.sendTemplate(res, ru.templates.newThread);
-    // reached via submitting thread contents
-    } else if (req.method === 'POST') {
-      let form = '';
-      req.on('data', (d) => form += d);
-      req.on('end', async () => {
-        form = qs.parse(form);
-        try {
-          await db.createThread(
-            form.title,
-            form.content,
-            cookie.parse(req.headers.cookie).userID
-          );
-          res.writeHead(301, { Location: '/public' });
-          res.end();
-        } catch (err) {
-          err.code = 500;
-          ru.sendTemplate(res, ru.templates.error, { err });
-        }
-      });
-    }
-  } else {
+  if (!ru.isLoggedIn(req, res)) {
     ru.warnNotLogIn(res);
+  }
+  // reached via a link, asks user to submit thread contents
+  if (req.method === 'GET') {
+    ru.sendTemplate(res, ru.templates.newThread);
+  // reached via submitting thread contents
+  } else if (req.method === 'POST') {
+    let form = '';
+    req.on('data', (d) => form += d);
+    req.on('end', async () => {
+      try {
+        form = qs.parse(form);
+        await db.createThread(
+          form.title,
+          form.content,
+          cookie.parse(req.headers.cookie).userID
+        );
+        res.writeHead(301, { Location: '/public' });
+        res.end();
+      } catch (err) {
+        err.code = 500;
+        ru.sendTemplate(res, ru.templates.error, { err });
+      }
+    });
   }
 };
 
@@ -134,9 +135,63 @@ exports.thread = async (req, res) => {
   try {
     const id = new URL('http:/' + req.url).searchParams.get('id');
     const threadInfo = await db.findChildren(id);
-    ru.sendTemplate(res, ru.templates.thread, { threadInfo });
+    const userID =
+      ru.isLoggedIn(req, res)
+      && cookie.parse(req.headers.cookie).userID;
+    ru.sendTemplate(res, ru.templates.thread, {
+      threadInfo,
+      userID
+    });
   } catch (err) {
     err.code = 500;
     ru.sendTemplate(res, ru.templates.error, { err });
   }
+};
+
+exports.serveJS = (req, res) => {
+  try {
+    const file = fs.readFileSync(path.resolve(__dirname, '..', req.url.substr(1)));
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/html');
+    res.end(file);
+  } catch (err) {
+    err.code = 500;
+    ru.sendTemplate(res, ru.templates.error, { err });
+  }
+};
+
+exports.postResponse = async (req, res) => {
+  let form = '';
+  req.on('data', (d) => form += d);
+  req.on('end', async () => {
+    try {
+      form = qs.parse(form);
+      await db.postResponse(
+        form.content,
+        form.toUpdateID,
+        cookie.parse(req.headers.cookie).userID
+      );
+      res.writeHead(301, { Location: '/thread?id=' + form.threadID });
+      res.end();
+    } catch (err) {
+      err.code = 500;
+      ru.sendTemplate(res, ru.templates.error, { err });
+    }
+  });
+};
+
+exports.modify = async (req, res) => {
+  let form = '';
+  req.on('data', d => form += d);
+  req.on('end', async () => {
+    try {
+      form = qs.parse(form);
+      await db.modifyThread(form.content, form.toUpdateID);
+      res.writeHead(301, { Location: '/thread?id=' + form.threadID });
+      res.end();
+    } catch (err) {
+      err.code = 500;
+      ru.sendTemplate(res, ru.templates.error, { err });
+    }
+  });
 };

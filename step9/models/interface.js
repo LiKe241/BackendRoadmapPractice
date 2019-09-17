@@ -71,7 +71,7 @@ exports.getLatest = async (start, end) => {
       title, \
       DATE_FORMAT(timeCreated, "%e-%c-%y %T") AS timeCreated, \
       DATE_FORMAT(timeEdited, "%e-%c-%y %T") AS timeEdited \
-    FROM threads AS t JOIN users \
+    FROM threads AS t JOIN users AS u ON t.FK_creatorID = u.ID \
     WHERE parentID = 0 \
     ORDER BY timeEdited \
     LIMIT ? OFFSET ?',
@@ -82,6 +82,7 @@ exports.getLatest = async (start, end) => {
 /*
 returns all children of rootID in the format:
 {
+  id: XXX,
   title: XXX,
   content: XXX,
   creatorName: XXX,
@@ -89,6 +90,7 @@ returns all children of rootID in the format:
   timeEdited: XXX,
   responses: [
     {
+      id: XXX,
       content: XXX,
       creatorName: XXX,
       timeCreated: XXX,
@@ -102,20 +104,23 @@ const sqlFindChildThreads =
 'SELECT \
   t.ID AS id, \
   content, \
+  FK_creatorID AS creatorID, \
   username AS creatorName, \
   DATE_FORMAT(timeCreated, "%e-%c-%y %T") AS timeCreated, \
   DATE_FORMAT(timeEdited, "%e-%c-%y %T") AS timeEdited \
-FROM threads AS t JOIN users \
+FROM threads AS t JOIN users AS u ON t.FK_creatorID = u.ID \
 WHERE parentID = ?';
 exports.findChildren = async (rootID) => {
   let parent = await query(
     'SELECT \
+      t.ID AS id, \
       title, \
       content, \
+      FK_creatorID AS creatorID, \
       username AS creatorName, \
       DATE_FORMAT(timeCreated, "%e-%c-%y %T") AS timeCreated, \
       DATE_FORMAT(timeEdited, "%e-%c-%y %T") AS timeEdited \
-    FROM threads AS t JOIN users \
+    FROM threads AS t JOIN users AS u ON t.FK_creatorID = u.ID \
     WHERE t.ID = ?',
     [rootID]
   );
@@ -138,3 +143,18 @@ async function recursiveFindChildren(parents) {
     }
   }
 }
+
+exports.postResponse = async (content, toUpdateID, userID) => {
+  await query(
+    'INSERT INTO threads (content, parentID, FK_creatorID) \
+    SELECT ?, ?, ID FROM users WHERE ID = ?',
+    [content, toUpdateID, userID]
+  );
+};
+
+exports.modifyThread = async (content, toUpdateID) => {
+  await query(
+    'UPDATE threads SET content = ? WHERE ID = ?',
+    [content, toUpdateID]
+  );
+};
