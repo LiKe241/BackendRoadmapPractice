@@ -6,7 +6,7 @@ const router = express.Router();
 router.route('/register')
   .all((req, res, next) => {
     if (req.cookies.name) {
-      next({ code: 403, message: 'cannot register while logged in' });
+      next({ code: 400, message: 'cannot register while logged in' });
     } else {
       next();
     }
@@ -15,16 +15,16 @@ router.route('/register')
   .post((req, res, next) => {
     const registerInfo = req.body;
     if (!registerInfo.name || !registerInfo.password) {
-      next({ code: 403, message: 'missing required info' });
+      next({ code: 400, message: 'missing required info' });
     } else {
-      controllers.register(registerInfo, res);
+      controllers.register(registerInfo, res, next);
     }
   });
 
 router.route('/login')
   .all((req, res, next) => {
     if (req.cookies.name) {
-      next({ code: 403, message: 'cannot login while logged in' });
+      next({ code: 400, message: 'cannot login while logged in' });
     } else {
       next();
     }
@@ -33,16 +33,16 @@ router.route('/login')
   .post((req, res, next) => {
     const loginInfo = req.body;
     if (!loginInfo.name || !loginInfo.password) {
-      next({ code: 403, message: 'missing required info' });
+      next({ code: 400, message: 'missing required info' });
     } else {
-      controllers.login(loginInfo, res);
+      controllers.login(loginInfo, res, next);
     }
   });
 
 router.route('/logout')
   .all((req, res, next) => {
     if (!req.cookies.name) {
-      next({ code: 403, message: 'cannot logout while not logged in'});
+      next({ code: 401, message: 'cannot logout while not logged in'});
     } else {
       next();
     }

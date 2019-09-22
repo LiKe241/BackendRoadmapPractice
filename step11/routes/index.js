@@ -9,8 +9,8 @@ indexRouter.get('/', (req, res, next) => {
   res.redirect(301, '/public');
 });
 
-indexRouter.get('/public', (req, res) => {
-  controllers.getPublic(req, res);
+indexRouter.get('/public', (req, res, next) => {
+  controllers.getPublic(req.cookies.name, res, next);
 });
 
 indexRouter.use('/user', userRoutes);
