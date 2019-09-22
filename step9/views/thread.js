@@ -1,4 +1,5 @@
 // replaces button to response element
+/* eslint-disable no-unused-vars, no-undef */
 function replaceToInput(toReplace, type) {
   const newDiv = document.createElement('DIV');
   newDiv.setAttribute('id', 'd' + toReplace.name);
@@ -56,18 +57,18 @@ function restoreToButton(id, type) {
 function deleteThread(toDelete) {
   const toDeleteID = toDelete.name;
   const xhttp = new XMLHttpRequest();
+  const deletingText = document.createElement('P');
+  deletingText.innerText = 'deleting...';
   xhttp.onreadystatechange = function () {
-    if (this.readyState == 4) {
-      if (this.status == 200) {
+    if (this.readyState === 4) {
+      if (this.status === 200) {
         window.location.reload(false);
-      } else if (this.status == 403) {
+      } else if (this.status === 403) {
         deletingText.innerText = 'deletion failed';
       }
     }
   };
   xhttp.open('GET', '/delete?id=' + toDelete.name, true);
   xhttp.send();
-  const deletingText = document.createElement('P');
-  deletingText.innerText = 'deleting...';
   toDelete.parentNode.replaceChild(deletingText, toDelete);
 }
