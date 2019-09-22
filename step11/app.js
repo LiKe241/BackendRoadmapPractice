@@ -10,10 +10,6 @@ mongoose.connect(
   config.database.url,
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
-/* eslint-disable no-console */
-mongoose.connection.on('error', () =>
-  console.error('mongodb error')
-);
 
 const app = express();
 
