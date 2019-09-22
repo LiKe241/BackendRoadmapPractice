@@ -1,0 +1,28 @@
+body
+  if username
+    p Hello #{username}
+    .newThread
+      a(href="/thread/new") start a new thread
+    .myPosts
+      a(href="/thread/my") my posts
+    .logout
+      a(href="/user/logout") logout
+  else
+    p You need to log in or register
+    .login
+      a(href="/user/login") login
+    .register
+      a(href="/user/register") register
+  table
+    tr
+      th Title
+      th Created By
+      th Last Edited Time
+      th Created Time
+    each thread in threads
+      tr
+        td
+          a(href="/thread/" + thread.threadID) #{thread.title}
+        td #{thread.creatorName}
+        td #{thread.timeEdited}
+        td #{thread.timeCreated}

@@ -1,0 +1,10 @@
+body
+  form(action='/newThread', method='post')
+    .title
+      p New Thread Title
+      input(autocomplete='off', name='title', placeholder='thread title')
+    .content
+      p New Thread Contents
+      textarea(name='content', placeholder='thread content')
+    .submit
+      input(type='submit', value='create thread')
