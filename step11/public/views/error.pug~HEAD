@@ -1,4 +1,0 @@
-body
-  a(href="/public") main page
-  p Error Code: #{err.code}
-  | Message: #{err.message}
