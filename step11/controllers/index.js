@@ -5,7 +5,7 @@ exports.register = userController.register;
 
 exports.login = userController.login;
 
-exports.getPublic = threadController.getPublic;
+exports.getMain = threadController.getMain;
 
 exports.createThread = threadController.createThread;
 

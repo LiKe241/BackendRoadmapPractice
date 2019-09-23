@@ -23,6 +23,6 @@ body
     each thread in threads
       tr
         td
-          a(href="/thread/" + thread._id) #{thread.title}
+          a(href="/thread/" + thread.id) #{thread.title}
         td #{thread.author}
         td #{thread.timeUpdated}

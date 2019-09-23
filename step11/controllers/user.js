@@ -14,7 +14,7 @@ exports.register = async (registerInfo, res, next) => {
   } else {
     newUser.save();
     res.cookie('name', newUser.name);
-    res.redirect(301, '/public');
+    res.redirect(301, '/main');
   }
 };
 
@@ -27,7 +27,7 @@ exports.login = async (loginInfo, res, next) => {
   } else if (await bcrypt.compare(loginInfo.password, savedInfo.password)) {
     // user's password matched with password in database
     res.cookie('name', loginInfo.name);
-    res.redirect(301, '/public');
+    res.redirect(301, '/main');
   } else {
     // user's password did not match with password in database
     next({ code: 400, message: 'password does not match record' });

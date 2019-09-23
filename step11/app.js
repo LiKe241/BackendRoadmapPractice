@@ -22,14 +22,17 @@ app.set('view engine', 'pug');
 app
   .use(bodyParser.urlencoded({ extended: true }))
   .use(cookieParser())
+  .use(express.static('public'))
   .use(routes.indexRouter)
   .use((err, req, res, next) => {
     err.code = err.code ? err.code : 500;
+    res.status(err.code);
     res.render('error', { err });
   });
 
 // starts server
 app.listen(app.get('port'), () => {
+  /* eslint-disable no-console */
   console.log(
     'Express server listening on port ' + app.get('port')
   );

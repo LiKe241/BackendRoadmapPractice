@@ -6,11 +6,11 @@ const threadRoutes = require('./thread');
 const indexRouter = express.Router();
 
 indexRouter.get('/', (req, res, next) => {
-  res.redirect(301, '/public');
+  res.redirect(301, '/main');
 });
 
-indexRouter.get('/public', (req, res, next) => {
-  controllers.getPublic(req.cookies.name, res, next);
+indexRouter.get('/main', (req, res, next) => {
+  controllers.getMain(req.cookies.name, res, next);
 });
 
 indexRouter.use('/user', userRoutes);
