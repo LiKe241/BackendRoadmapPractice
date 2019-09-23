@@ -27,7 +27,7 @@ router.route('/new')
 // _id in mongoose is hexadecimal string for a 12-byte value
 router.route('/:id([a-z\\d]{24})')
   .get((req, res, next) =>
-    controllers.getThread(req.params.id, res, next)
+    controllers.getThread(req.params.id, req.cookies.name, res, next)
   )
   .post((req, res, next) => {
     const response = {
@@ -45,7 +45,7 @@ router.route('/:id([a-z\\d]{24})')
   })
   .delete((req, res, next) => {
     const toDisable = { id: req.params.id, author: req.cookies.name };
-    if (toDisable.author) {
+    if (!toDisable.author) {
       next({ code: 401, message: 'cannot delete without logging in' });
     } else {
       controllers.disableThread(toDisable, res, next);
