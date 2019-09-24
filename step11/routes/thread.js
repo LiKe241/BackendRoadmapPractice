@@ -48,7 +48,7 @@ router.route('/:id([a-z\\d]{24})')
     if (!toDisable.author) {
       next({ code: 401, message: 'cannot delete without logging in' });
     } else {
-      controllers.disableThread(toDisable, res, next);
+      controllers.updateThread(toDisable, 'disabling', res, next);
     }
   })
   .put((req, res, next) => {
@@ -62,7 +62,7 @@ router.route('/:id([a-z\\d]{24})')
     } else if (!newContent.author) {
       next({ code: 401, message: 'cannot update without logging in' });
     } else {
-      controllers.updateThread(newContent, res, next);
+      controllers.updateThread(newContent, 'modification', res, next);
     }
   });
 

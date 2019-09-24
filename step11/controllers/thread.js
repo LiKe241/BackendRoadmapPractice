@@ -49,27 +49,6 @@ exports.postResponse = async (response, res, next) => {
   res.redirect(301, rootID);
 };
 
-// toDisable = { id, author }
-exports.disableThread = async (toDisable, res, next) => {
-  const toDisableDocument = await threadModel.findOne({
-    _id: toDisable.id,
-    author: toDisable.author
-  });
-  if (!toDisableDocument) {
-    next({
-      code: 401,
-      message: 'current user is not the author or cannot find thread'
-    });
-  } else {
-    toDisableDocument.enabled = false;
-    toDisableDocument.timeEdited = Date.now();
-    toDisableDocument.save();
-    updateRootThread(toDisableDocument.id);
-    res.status(200);
-    res.send();
-  }
-};
-
 async function updateRootThread(id) {
   let rootThread = await threadModel.findOne({ _id: id });
   while (rootThread.parentID !== '') {
@@ -80,8 +59,8 @@ async function updateRootThread(id) {
   return rootThread.id;
 }
 
-// toUpdate = { id, content, author }
-exports.updateThread = async (toUpdate, res, next) => {
+// toUpdate = { id, author (, content) }
+exports.updateThread = async (toUpdate, action, res, next) => {
   const toUpdateDocument = await threadModel.findOne({
     _id: toUpdate.id,
     author: toUpdate.author
@@ -92,7 +71,13 @@ exports.updateThread = async (toUpdate, res, next) => {
       message: 'current user is not the author or cannot find thread'
     });
   } else {
-    toUpdateDocument.content = toUpdate.content;
+    if (action === 'modification') {
+      toUpdateDocument.content = toUpdate.content;
+    } else if (action === 'disabling') {
+      toUpdateDocument.enabled = false;
+    } else {
+      next({ code: 500, message: 'unrecognized action for updateThread()' });
+    }
     toUpdateDocument.timeEdited = Date.now();
     toUpdateDocument.save();
     updateRootThread(toUpdateDocument.id);
