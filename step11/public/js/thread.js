@@ -77,9 +77,7 @@ function deleteThread(toDelete) {
         'error ' + res.status + ': ' + res.statusText
       ));
     },
-    success: (res) => {
-      location.reload();
-    }
+    success: () => location.reload()
   });
   $(toDelete).replaceWith($deletingText);
 }

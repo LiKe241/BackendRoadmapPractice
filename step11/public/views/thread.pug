@@ -1,15 +1,19 @@
 mixin recursiveParse(responses)
   ul
     each response in responses
-      li(id='p' + response.id) #{response.content}
-      li created by #{response.author} at #{response.timeCreated}, edited at #{response.timeEdited}
+      if response.enabled
+        li(id='p' + response.id) #{response.content}
+        li created by #{response.author} at #{response.timeCreated}, edited at #{response.timeEdited}
+        if username == response.author
+          button(class=response.id onclick='displayModificationForm(this)') modify
+          button(class=response.id onclick='deleteThread(this)') delete
+      else
+        li(id='p' + response.id) [DELETED]
+        li deleted at #{response.timeEdited}
       if username
         button(class=response.id onclick='displayResponseForm(this)') post response
       else
         li log in to post response
-      if username == response.author
-        button(class=response.id onclick='displayModificationForm(this)') modify
-        button(class=response.id onclick='deleteThread(this)') delete
       if response.responses
          +recursiveParse(response.responses)
 
@@ -24,14 +28,18 @@ head
 body
   a(href='/main') main page
   h1 #{threadInfo.title}
-  p(id='p' + threadInfo.id) #{threadInfo.content}
-  p created by #{threadInfo.author} at #{threadInfo.timeCreated}, edited at #{threadInfo.timeEdited}
+  if threadInfo.enabled
+    p(id='p' + threadInfo.id) #{threadInfo.content}
+    p created by #{threadInfo.author} at #{threadInfo.timeCreated}, edited at #{threadInfo.timeEdited}
+    if username == threadInfo.author
+      button(class=threadInfo.id onclick='displayModificationForm(this)') modify
+      button(class=threadInfo.id onclick='deleteThread(this)') delete
+  else
+    p(id='p' + threadInfo.id) [DELETED]
+    p deleted at #{threadInfo.timeEdited}
   if username
     button(class=threadInfo.id onclick='displayResponseForm(this)') post response
   else
     p log in to post response
-  if username == threadInfo.author
-    button(class=threadInfo.id onclick='displayModificationForm(this)') modify
-    button(class=threadInfo.id onclick='deleteThread(this)') delete
   if threadInfo.responses
     +recursiveParse(threadInfo.responses)

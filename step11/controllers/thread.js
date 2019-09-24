@@ -42,14 +42,43 @@ async function recursiveFindChildren(parents) {
 }
 
 // response = { content, parentID, author }
-exports.postResponse = (response, res, next) => {
-  next({ code: 501, message: 'postResponse not implemented yet' });
+exports.postResponse = async (response, res, next) => {
+  const responseDocument = new threadModel(response);
+  responseDocument.save();
+  const rootID = updateRootThread(responseDocument.id);
+  res.redirect(301, rootID);
 };
 
 // toDisable = { id, author }
-exports.disableThread = (toDisable, res, next) => {
-  next({ code: 501, message: 'disableThread not implemented yet' });
+exports.disableThread = async (toDisable, res, next) => {
+  const toDisableDocument = await threadModel.findOne({
+    _id: toDisable.id,
+    author: toDisable.author
+  });
+  if (!toDisableDocument) {
+    next({
+      code: 401,
+      message: 'current user is not the author or cannot find thread'
+    });
+  } else {
+    toDisableDocument.enabled = false;
+    toDisableDocument.timeEdited = Date.now();
+    toDisableDocument.save();
+    updateRootThread(toDisableDocument.id);
+    res.status(200);
+    res.send();
+  }
 };
+
+async function updateRootThread(id) {
+  let rootThread = await threadModel.findOne({ _id: id });
+  while (rootThread.parentID !== '') {
+    rootThread = await threadModel.findOne({ _id: rootThread.parentID });
+  }
+  rootThread.timeUpdated = Date.now();
+  rootThread.save();
+  return rootThread.id;
+}
 
 // newContent = { id, content, author }
 exports.updateThread = (newContent, res, next) => {
