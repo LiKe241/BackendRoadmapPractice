@@ -45,7 +45,7 @@ async function recursiveFindChildren(parents) {
 exports.postResponse = async (response, res, next) => {
   const responseDocument = new threadModel(response);
   responseDocument.save();
-  const rootID = updateRootThread(responseDocument.id);
+  const rootID = await updateRootThread(responseDocument.id);
   res.redirect(301, rootID);
 };
 
@@ -80,9 +80,25 @@ async function updateRootThread(id) {
   return rootThread.id;
 }
 
-// newContent = { id, content, author }
-exports.updateThread = (newContent, res, next) => {
-  next({ code: 501, message: 'updateThread not implemented yet'});
+// toUpdate = { id, content, author }
+exports.updateThread = async (toUpdate, res, next) => {
+  const toUpdateDocument = await threadModel.findOne({
+    _id: toUpdate.id,
+    author: toUpdate.author
+  });
+  if (!toUpdateDocument) {
+    next({
+      code: 401,
+      message: 'current user is not the author or cannot find thread'
+    });
+  } else {
+    toUpdateDocument.content = toUpdate.content;
+    toUpdateDocument.timeEdited = Date.now();
+    toUpdateDocument.save();
+    updateRootThread(toUpdateDocument.id);
+    res.status(200);
+    res.send();
+  }
 };
 
 exports.getThreadsBy = (username, res, next) => {
