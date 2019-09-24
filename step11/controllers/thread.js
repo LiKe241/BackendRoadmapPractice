@@ -50,10 +50,7 @@ exports.postResponse = async (response, res, next) => {
 };
 
 async function updateRootThreadOf(id) {
-  let rootThread = await threadModel.findOne({ _id: id });
-  while (rootThread.parentID !== '') {
-    rootThread = await threadModel.findOne({ _id: rootThread.parentID });
-  }
+  const rootThread = await findRootThreadOf(id);
   rootThread.timeUpdated = Date.now();
   rootThread.save();
   return rootThread.id;
@@ -86,6 +83,24 @@ exports.updateThread = async (toUpdate, action, res, next) => {
   }
 };
 
-exports.getThreadsBy = (username, res, next) => {
-  next({ code: 501, message: 'getThreadsBy not implemented yet'});
+exports.getThreadsBy = async (username, res, next) => {
+  const posts = await threadModel.find({ author: username });
+  const postsInfo = [];
+  for (let post of posts) {
+    if (post.title === '') {
+      const root = await findRootThreadOf(post.id);
+      root.response = post;
+      post = root;
+    }
+    postsInfo.push(post);
+  }
+  res.render('my', { postsInfo });
 };
+
+async function findRootThreadOf(id) {
+  let rootThread = await threadModel.findOne({ _id: id });
+  while (rootThread.parentID !== '') {
+    rootThread = await threadModel.findOne({ _id: rootThread.parentID });
+  }
+  return rootThread;
+}
