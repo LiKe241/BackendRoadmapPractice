@@ -45,11 +45,11 @@ async function recursiveFindChildren(parents) {
 exports.postResponse = async (response, res, next) => {
   const responseDocument = new threadModel(response);
   responseDocument.save();
-  const rootID = await updateRootThread(responseDocument.id);
+  const rootID = await updateRootThreadOf(responseDocument.id);
   res.redirect(301, rootID);
 };
 
-async function updateRootThread(id) {
+async function updateRootThreadOf(id) {
   let rootThread = await threadModel.findOne({ _id: id });
   while (rootThread.parentID !== '') {
     rootThread = await threadModel.findOne({ _id: rootThread.parentID });
@@ -59,7 +59,7 @@ async function updateRootThread(id) {
   return rootThread.id;
 }
 
-// toUpdate = { id, author (, content) }
+// toUpdate = { id, author (, content) }, action = 'modification'/'disabling'
 exports.updateThread = async (toUpdate, action, res, next) => {
   const toUpdateDocument = await threadModel.findOne({
     _id: toUpdate.id,
@@ -80,7 +80,7 @@ exports.updateThread = async (toUpdate, action, res, next) => {
     }
     toUpdateDocument.timeEdited = Date.now();
     toUpdateDocument.save();
-    updateRootThread(toUpdateDocument.id);
+    updateRootThreadOf(toUpdateDocument.id);
     res.status(200);
     res.send();
   }
