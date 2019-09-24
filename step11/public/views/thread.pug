@@ -4,11 +4,11 @@ mixin recursiveParse(responses)
       li(id='p' + response.id) #{response.content}
       li created by #{response.author} at #{response.timeCreated}, edited at #{response.timeEdited}
       if username
-        button(class=response.id onclick='postResponse(this)') post response
+        button(class=response.id onclick='displayResponseForm(this)') post response
       else
         li log in to post response
       if username == response.author
-        button(class=response.id onclick='replaceToInput(this, "modification")') modify
+        button(class=response.id onclick='displayModificationForm(this)') modify
         button(class=response.id onclick='deleteThread(this)') delete
       if response.responses
          +recursiveParse(response.responses)
@@ -17,21 +17,21 @@ head
   title #{threadInfo.title}
   script(src='/js/thread.js')
   script(
-    src='https://code.jquery.com/jquery-3.4.1.slim.min.js'
-    integrity='sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8='
+    src='https://code.jquery.com/jquery-3.4.1.js'
+    integrity='sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU='
     crossorigin='anonymous'
   )
 body
-  a(href="/main") main page
+  a(href='/main') main page
   h1 #{threadInfo.title}
   p(id='p' + threadInfo.id) #{threadInfo.content}
   p created by #{threadInfo.author} at #{threadInfo.timeCreated}, edited at #{threadInfo.timeEdited}
   if username
-    button(class=threadInfo.id onclick='postResponse(this)') post response
+    button(class=threadInfo.id onclick='displayResponseForm(this)') post response
   else
     p log in to post response
   if username == threadInfo.author
-    button(class=threadInfo.id onclick='replaceToInput(this, "modification")') modify
+    button(class=threadInfo.id onclick='displayModificationForm(this)') modify
     button(class=threadInfo.id onclick='deleteThread(this)') delete
   if threadInfo.responses
     +recursiveParse(threadInfo.responses)
