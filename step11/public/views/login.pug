@@ -1,13 +1,12 @@
-head
-  title login
-body
-  form(action='login', method='post')
-    div
-      label(for='name') username:
-      input(name='name')
-    br
-    div
-      label(for='password') password:
-      input(name='password')
-    br
-    input(type='submit', value='log in')
+extends layout.pug
+
+block title
+  title Login
+
+block content
+  form(action="login" method="post")
+    div(class="form-group")
+      input(autocomplete="off" autofocus class="form-control" name="name" placeholder="Username" type="text")
+    div(class="form-group")
+      input(class="form-control" name="password" placeholder="Password" type="password")
+    button(class="btn btn-primary" type="submit") log in

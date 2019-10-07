@@ -1,10 +1,12 @@
-body
+extends layout.pug
+
+block title
+  title New Thread
+
+block content
   form(action='new', method='post')
-    .title
-      p New Thread Title
-      input(autocomplete='off', name='title', placeholder='thread title')
-    .content
-      p New Thread Contents
-      textarea(name='content', placeholder='thread content')
-    .submit
-      input(type='submit', value='create thread')
+    div(class="form-group")
+      input(autocomplete="off" autofocus class="form-control" name="title" placeholder="thread title" type="text")
+    div(class="form-group")
+      textarea(autocomplete="off" autofocus class="form-control" name="content" placeholder="thread content" type="text")
+    button(class="btn btn-primary" type="submit") create thread

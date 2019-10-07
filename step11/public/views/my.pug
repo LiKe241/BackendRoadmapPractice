@@ -1,20 +1,25 @@
-body
-  a(href="/main") main page
-  each post in postsInfo
-    if post.response
-      p.
-        #[a(href="/thread/" + post.id) #{post.title}]
-        #{post.creatorName}
-        created: #{post.timeCreated}
-        edited: #{post.timeEdited}
-      ul
-        li.
-          #{post.response.content}
-          created: #{post.response.timeCreated}
-          edited: #{post.response.timeEdited}
-    else
-      p.
-        #[a(href="/thread/" + post.id) #{post.title}]
-        #{post.content}
-        created: #{post.timeCreated}
-        edited: #{post.timeEdited}
+extends layout.pug
+
+block title
+  title My Posts
+
+block content
+  table(class="table")
+    tr
+      th Thread Title
+      th Created By
+      th Content
+      th Created Time
+      th Edited Time
+    each post in postsInfo
+      tr
+        td #[a(href="/thread/" + post.id) #{post.title}]
+        td #{post.author}
+        if post.response
+          td #{post.response.content}
+          td #{formatTime(post.response.timeCreated)}
+          td #{formatTime(post.response.timeEdited)}
+        else
+          td #{post.content}
+          td #{formatTime(post.timeCreated)}
+          td #{formatTime(post.timeEdited)}

@@ -11,7 +11,7 @@ router.route('/new')
       next();
     }
   })
-  .get((req, res) => res.render('newThread'))
+  .get((req, res) => res.render('newThread', { username: req.cookies.name }))
   .post((req, res, next) => {
     const threadInfo = req.body;
     threadInfo.author = req.cookies.name;

@@ -1,6 +1,8 @@
-head
+extends layout.pug
+
+block title
   title error
-body
-  a(href="/main") main page
-  p Error Code: #{err.code}
-  | Message: #{err.message}
+
+block content
+  h5 Error Code: #{err.code}
+  p Message: #{err.message}

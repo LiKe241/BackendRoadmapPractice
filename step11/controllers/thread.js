@@ -94,7 +94,7 @@ exports.getThreadsBy = async (username, res, next) => {
     }
     postsInfo.push(post);
   }
-  res.render('my', { postsInfo });
+  res.render('my', { username, postsInfo });
 };
 
 async function findRootThreadOf(id) {

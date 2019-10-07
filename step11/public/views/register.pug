@@ -1,13 +1,12 @@
-head
+extends layout.pug
+
+block title
   title register
-body
+
+block content
   form(action='register', method='post')
-    div
-      label(for='name') new username:
-      input(name='name')
-    br
-    div
-      label(for='password') new password:
-      input(name='password')
-    br
-    input(type='submit', value='register')
+    div(class="form-group")
+      input(autocomplete="off" autofocus class="form-control" name="name" placeholder="Username" type="text")
+    div(class="form-group")
+      input(class="form-control" name="password" placeholder="Password" type="password")
+    button(class="btn btn-primary" type="submit") register

@@ -1,14 +1,18 @@
 /* eslint-disable no-undef */
 // replaces toReplace with interface of posting response
 function displayResponseForm(toReplace) {
-  const threadID = $(toReplace).attr('class');
-  const $newDiv = $('<div>', { class: threadID });
+  const threadID = $(toReplace).attr('name');
+  const $newDiv = $('<div>', { name: threadID });
   const $form = $('<form>', { method: 'post', action: threadID})
     .appendTo($newDiv);
   $('<textarea>', { name: 'content' }).appendTo($form);
-  $('<button>', { text: 'post response' }).appendTo($form);
+  $('<button>', {
+    text: 'post response',
+    class: 'btn btn-primary'
+  }).appendTo($form);
   $('<button>', {
     text: 'cancel response',
+    class: 'btn btn-primary',
     click: () => restoreToButton($newDiv, 'response')
   }).appendTo($newDiv);
   $(toReplace).replaceWith($newDiv);
@@ -16,18 +20,20 @@ function displayResponseForm(toReplace) {
 
 // replaces toReplace with interface of posting modification
 function displayModificationForm(toReplace) {
-  const threadID = $(toReplace).attr('class');
-  const $newDiv = $('<div>', { class: threadID });
+  const threadID = $(toReplace).attr('name');
+  const $newDiv = $('<div>', { name: threadID });
   const $content = $('<textarea>', {
     name: 'content',
     text: $('#p' + threadID).text()
   }).appendTo($newDiv);
   $('<button>', {
     text: 'post modification',
+    class: 'btn btn-primary',
     click: () => postModification($newDiv, $content, threadID)
   }).appendTo($newDiv);
   $('<button>', {
     text: 'cancel modification',
+    class: 'btn btn-primary',
     click: () => restoreToButton($newDiv, 'modification')
   }).appendTo($newDiv);
   $(toReplace).replaceWith($newDiv);
@@ -55,7 +61,10 @@ function postModification($toReplace, $content, threadID) {
 
 // restores response elements back to button
 function restoreToButton(toReplace, type) {
-  const $button = $('<button>', { class: toReplace.attr('class') });
+  const $button = $('<button>', {
+    name: toReplace.attr('name'),
+    class: 'btn btn-primary'
+  });
   if (type === 'response') {
     $button.text('post response');
     $button.click(() => displayResponseForm($button));
@@ -70,7 +79,7 @@ function restoreToButton(toReplace, type) {
 function deleteThread(toDelete) {
   const $deletingText = $('<p>').text('deleting...');
   $.ajax({
-    url: toDelete.className,
+    url: toDelete.name,
     type: 'DELETE',
     error: (res) => {
       $deletingText.replaceWith($('<p>').text(

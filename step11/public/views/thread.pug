@@ -1,45 +1,49 @@
-mixin recursiveParse(responses)
-  ul
-    each response in responses
-      if response.enabled
-        li(id='p' + response.id) #{response.content}
-        li created by #{response.author} at #{response.timeCreated}, edited at #{response.timeEdited}
-        if username == response.author
-          button(class=response.id onclick='displayModificationForm(this)') modify
-          button(class=response.id onclick='deleteThread(this)') delete
-      else
-        li(id='p' + response.id) [DELETED]
-        li deleted at #{response.timeEdited}
-      if username
-        button(class=response.id onclick='displayResponseForm(this)') post response
-      else
-        li log in to post response
-      if response.responses
-         +recursiveParse(response.responses)
+extends layout.pug
 
-head
-  title #{threadInfo.title}
+mixin recursiveParse(responses)
+  ul(class="list-group")
+    each response in responses
+      li(class="list-group-item")
+        if response.enabled
+          p(class="mb-1" id='p' + response.id) #{response.content}
+          p(class="mb-1") created by #{response.author} at #{formatTime(response.timeCreated)}, edited at #{formatTime(response.timeEdited)}
+          if username
+            .mb-1
+              button(class="btn btn-primary" name=response.id onclick='displayResponseForm(this)') post response
+              if username == response.author
+                button(class="btn btn-primary" name=response.id onclick='displayModificationForm(this)') modify
+                button(class="btn btn-primary" name=response.id onclick='deleteThread(this)') delete
+        else
+          p(class="mb-1") [DELETED]
+          p(class="mb-1") deleted at #{formatTime(response.timeEdited)}
+        if response.responses
+          +recursiveParse(response.responses)
+
+block title
   script(src='/js/thread.js')
-  script(
-    src='https://code.jquery.com/jquery-3.4.1.js'
-    integrity='sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU='
-    crossorigin='anonymous'
-  )
-body
-  a(href='/main') main page
-  h1 #{threadInfo.title}
+  script(src='https://code.jquery.com/jquery-3.4.1.js' integrity='sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=' crossorigin='anonymous')
   if threadInfo.enabled
-    p(id='p' + threadInfo.id) #{threadInfo.content}
-    p created by #{threadInfo.author} at #{threadInfo.timeCreated}, edited at #{threadInfo.timeEdited}
-    if username == threadInfo.author
-      button(class=threadInfo.id onclick='displayModificationForm(this)') modify
-      button(class=threadInfo.id onclick='deleteThread(this)') delete
+    title #{threadInfo.title}
   else
-    p(id='p' + threadInfo.id) [DELETED]
-    p deleted at #{threadInfo.timeEdited}
-  if username
-    button(class=threadInfo.id onclick='displayResponseForm(this)') post response
-  else
-    p log in to post response
-  if threadInfo.responses
-    +recursiveParse(threadInfo.responses)
+    title [DELETED]
+
+block content
+  ul(class="list-group")
+    li(class="list-group-item")
+      if threadInfo.enabled
+        h4(class="mb-1") #{threadInfo.title}
+        p(class="mb-1" id='p' + threadInfo.id) #{threadInfo.content}
+        p(class="mb-1") created by #{threadInfo.author} at #{formatTime(threadInfo.timeCreated)}, edited at #{formatTime(threadInfo.timeUpdated)}
+        if username
+          .mb-1
+            button(class="btn btn-primary" name=threadInfo.id onclick='displayResponseForm(this)') post response
+            if username == threadInfo.author
+              button(class="btn btn-primary" name=threadInfo.id onclick='displayModificationForm(this)') modify
+              button(class="btn btn-primary" name=threadInfo.id onclick='deleteThread(this)') delete
+      else
+        h4(class="mb-1") [DELETED]
+        p(class="mb-1" id='p' + threadInfo.id) [DELETED]
+        p(class="mb-1") deleted by #{threadInfo.author} at #{formatTime(threadInfo.timeUpdated)}
+
+      if threadInfo.responses
+        +recursiveParse(threadInfo.responses)
